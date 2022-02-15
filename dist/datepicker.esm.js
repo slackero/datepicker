@@ -5,7 +5,7 @@
  * Copyright 2014-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2020-09-29T14:46:10.983Z
+ * Date: 2022-02-15T10:38:25.938Z
  */
 
 import $ from 'jquery';
@@ -87,7 +87,7 @@ var DEFAULTS = {
   // A class (CSS) for highlight date item
   highlightedClass: 'highlighted',
   // The template of the datepicker
-  template: '<div class="datepicker-container">' + '<div class="datepicker-panel" data-view="years picker">' + '<ul>' + '<li data-view="years prev">&lsaquo;</li>' + '<li data-view="years current"></li>' + '<li data-view="years next">&rsaquo;</li>' + '</ul>' + '<ul data-view="years"></ul>' + '</div>' + '<div class="datepicker-panel" data-view="months picker">' + '<ul>' + '<li data-view="year prev">&lsaquo;</li>' + '<li data-view="year current"></li>' + '<li data-view="year next">&rsaquo;</li>' + '</ul>' + '<ul data-view="months"></ul>' + '</div>' + '<div class="datepicker-panel" data-view="days picker">' + '<ul>' + '<li data-view="month prev">&lsaquo;</li>' + '<li data-view="month current"></li>' + '<li data-view="month next">&rsaquo;</li>' + '</ul>' + '<ul data-view="week"></ul>' + '<ul data-view="days"></ul>' + '</div>' + '</div>',
+  template: '<div class="datepicker-container">' + '<div class="datepicker-panel" data-view="years picker">' + '<ul>' + '<li data-view="years prev" role="button" aria-label="Previous twelve years">&lsaquo;</li>' + '<li data-view="years current" role="button" aria-label="Current twelve years"></li>' + '<li data-view="years next" role="button" aria-label="Next twelve years">&rsaquo;</li>' + '</ul>' + '<ul data-view="years"></ul>' + '</div>' + '<div class="datepicker-panel" data-view="months picker">' + '<ul>' + '<li data-view="year prev" role="button" aria-label="Previous year">&lsaquo;</li>' + '<li data-view="year current" role="button" aria-label="Current year"></li>' + '<li data-view="year next" role="button" aria-label="Next year">&rsaquo;</li>' + '</ul>' + '<ul data-view="months"></ul>' + '</div>' + '<div class="datepicker-panel" data-view="days picker">' + '<ul>' + '<li data-view="month prev" role="button" aria-label="Previous month">&lsaquo;</li>' + '<li data-view="month current" role="button" aria-label="Current month"></li>' + '<li data-view="month next" role="button" aria-label="Next month">&rsaquo;</li>' + '</ul>' + '<ul data-view="week"></ul>' + '<ul data-view="days"></ul>' + '</div>' + '</div>',
   // The offset top or bottom of the datepicker from the element
   offset: 10,
   // The `z-index` of the datepicker
@@ -259,6 +259,7 @@ var methods = {
     this.showView(this.options.startView);
 
     if (!this.inline) {
+      this.$picker.removeAttr('aria-hidden').attr('role', 'dialog').attr('aria-model', 'true');
       this.$scrollParent.on(EVENT_SCROLL, $.proxy(this.place, this));
       $(window).on(EVENT_RESIZE, this.onResize = proxy(this.place, this));
       $(document).on(EVENT_CLICK, this.onGlobalClick = proxy(this.globalClick, this));
@@ -285,6 +286,7 @@ var methods = {
     this.$picker.addClass(CLASS_HIDE).off(EVENT_CLICK, this.click);
 
     if (!this.inline) {
+      this.$picker.attr('aria-hidden', 'true').removeAttr('role').removeAttr('aria-model');
       this.$scrollParent.off(EVENT_SCROLL, this.place);
       $(window).off(EVENT_RESIZE, this.onResize);
       $(document).off(EVENT_CLICK, this.onGlobalClick);
@@ -627,7 +629,7 @@ var handlers = {
         if (format.hasMonth) {
           this.showView(VIEWS.MONTHS);
         } else {
-          $target.siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).data('view', 'year');
+          $target.siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).attr('data-view', 'year').removeAttr('aria-selected');
           this.hideView();
         }
 
@@ -645,7 +647,7 @@ var handlers = {
         if (format.hasMonth) {
           this.showView(VIEWS.MONTHS);
         } else {
-          $target.addClass(options.pickedClass).data('view', 'year picked').siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).data('view', 'year');
+          $target.addClass(options.pickedClass).attr('data-view', 'year picked').attr('aria-selected', 'true').siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).attr('data-view', 'year').removeAttr('aria-selected');
           this.hideView();
         }
 
@@ -681,7 +683,7 @@ var handlers = {
         if (format.hasDay) {
           this.showView(VIEWS.DAYS);
         } else {
-          $target.siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).data('view', 'month');
+          $target.siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).attr('data-view', 'month').removeAttr('aria-selected');
           this.hideView();
         }
 
@@ -701,7 +703,7 @@ var handlers = {
         if (format.hasDay) {
           this.showView(VIEWS.DAYS);
         } else {
-          $target.addClass(options.pickedClass).data('view', 'month picked').siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).data('view', 'month');
+          $target.addClass(options.pickedClass).attr('data-view', 'month picked').attr('aria-selected', 'true').siblings(".".concat(options.pickedClass)).removeClass(options.pickedClass).attr('data-view', 'month').removeAttr('aria-selected');
           this.hideView();
         }
 
@@ -797,12 +799,15 @@ var render = {
     var items = [];
     var _this$options = this.options,
         weekStart = _this$options.weekStart,
+        days = _this$options.days,
         daysMin = _this$options.daysMin;
     weekStart = parseInt(weekStart, 10) % 7;
+    days = days.slice(weekStart).concat(days.slice(0, weekStart));
     daysMin = daysMin.slice(weekStart).concat(daysMin.slice(0, weekStart));
     $.each(daysMin, function (i, day) {
       items.push(_this.createItem({
-        text: day
+        text: day,
+        title: days[i]
       }));
     });
     this.$week.html(items.join(''));
@@ -1202,7 +1207,7 @@ var Datepicker = /*#__PURE__*/function () {
         $(options.container || $this).append($picker.addClass("".concat(NAMESPACE, "-inline")));
       } else {
         $(document.body).append($picker.addClass("".concat(NAMESPACE, "-dropdown")));
-        $picker.addClass(CLASS_HIDE).css({
+        $picker.addClass(CLASS_HIDE).attr('tabindex', '-1').attr('aria-hidden', 'true').css({
           zIndex: parseInt(options.zIndex, 10)
         });
       }
@@ -1429,7 +1434,7 @@ var Datepicker = /*#__PURE__*/function () {
         classes.push(options.disabledClass);
       }
 
-      return "<".concat(itemTag, " class=\"").concat(classes.join(' '), "\" data-view=\"").concat(item.view, "\">").concat(item.text, "</").concat(itemTag, ">");
+      return "<".concat(itemTag).concat(classes.length > 0 ? " class=\"".concat(classes.join(' '), "\"") : '').concat(item.view ? " data-view=\"".concat(item.view, "\"") : '').concat(item.title ? " title=\"".concat(item.title, "\"") : '').concat(item.picked ? ' aria-selected="true"' : '', ">").concat(item.text, "</").concat(itemTag, ">");
     }
   }, {
     key: "getValue",
