@@ -53,12 +53,18 @@ class Datepicker {
     this.initialDate = null;
     this.startDate = null;
     this.endDate = null;
+    this.featuredDates = [];
     this.init();
   }
 
   init() {
     const { $element: $this, options } = this;
-    let { startDate, endDate, date } = options;
+    let {
+      startDate,
+      endDate,
+      date,
+      featuredDates,
+    } = options;
 
     this.$trigger = $(options.trigger);
     this.isInput = $this.is('input') || $this.is('textarea');
@@ -93,6 +99,12 @@ class Datepicker {
       }
 
       this.endDate = endDate;
+    }
+
+    if (featuredDates) {
+      featuredDates = Array.isArray(featuredDates) ? featuredDates : [featuredDates];
+      featuredDates = featuredDates.map((featuredDate) => this.parseDate(featuredDate));
+      this.featuredDates = featuredDates;
     }
 
     this.date = date;
@@ -345,6 +357,7 @@ class Datepicker {
       picked: false,
       disabled: false,
       highlighted: false,
+      featured: false,
     };
     const classes = [];
 
@@ -364,6 +377,10 @@ class Datepicker {
 
     if (item.disabled) {
       classes.push(options.disabledClass);
+    }
+
+    if (item.featured) {
+      classes.push(options.featuredClass);
     }
 
     return (`<${itemTag}${classes.length > 0 ? ` class="${classes.join(' ')}"` : ''}${item.view ? ` data-view="${item.view}"` : ''

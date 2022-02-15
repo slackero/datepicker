@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.11 (Sep 29, 2020)
+
+- Add option to emphasize some featured dates
+
 ## 1.0.10 (Sep 29, 2020)
 
 - Add some new i18n languages.

@@ -1,11 +1,11 @@
 /*!
- * Datepicker v1.0.10
+ * Datepicker v1.0.11
  * https://fengyuanchen.github.io/datepicker
  *
  * Copyright 2014-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2022-02-15T10:47:58.195Z
+ * Date: 2022-02-15T13:33:48.926Z
  */
 
 'use strict';
@@ -95,6 +95,8 @@ var DEFAULTS = {
   disabledClass: 'disabled',
   // A class (CSS) for highlight date item
   highlightedClass: 'highlighted',
+  // A class (CSS) for featured date item
+  featuredClass: 'featured',
   // The template of the datepicker
   template: '<div class="datepicker-container">' + '<div class="datepicker-panel" data-view="years picker">' + '<ul>' + '<li data-view="years prev" role="button" aria-label="Previous twelve years">&lsaquo;</li>' + '<li data-view="years current" role="button" aria-label="Current twelve years"></li>' + '<li data-view="years next" role="button" aria-label="Next twelve years">&rsaquo;</li>' + '</ul>' + '<ul data-view="years"></ul>' + '</div>' + '<div class="datepicker-panel" data-view="months picker">' + '<ul>' + '<li data-view="year prev" role="button" aria-label="Previous year">&lsaquo;</li>' + '<li data-view="year current" role="button" aria-label="Current year"></li>' + '<li data-view="year next" role="button" aria-label="Next year">&rsaquo;</li>' + '</ul>' + '<ul data-view="months"></ul>' + '</div>' + '<div class="datepicker-panel" data-view="days picker">' + '<ul>' + '<li data-view="month prev" role="button" aria-label="Previous month">&lsaquo;</li>' + '<li data-view="month current" role="button" aria-label="Current month"></li>' + '<li data-view="month next" role="button" aria-label="Next month">&rsaquo;</li>' + '</ul>' + '<ul data-view="week"></ul>' + '<ul data-view="days"></ul>' + '</div>' + '</div>',
   // The offset top or bottom of the datepicker from the element
@@ -492,6 +494,24 @@ var methods = {
   },
 
   /**
+   * Sets the list of featured dates with a new list
+   *
+   * @param dates
+   */
+  setFeaturedDates: function setFeaturedDates(dates) {
+    var _this = this;
+
+    dates = Array.isArray(dates) ? dates : [dates];
+    this.featuredDates = dates.map(function (date) {
+      return _this.parseDate(date);
+    });
+
+    if (this.built) {
+      this.render();
+    }
+  },
+
+  /**
    * Parse a date string with the set date format
    *
    * @param {String} date
@@ -824,7 +844,8 @@ var render = {
   renderYears: function renderYears() {
     var options = this.options,
         startDate = this.startDate,
-        endDate = this.endDate;
+        endDate = this.endDate,
+        featuredDates = this.featuredDates;
     var disabledClass = options.disabledClass,
         filter = options.filter,
         yearSuffix = options.yearSuffix;
@@ -842,6 +863,7 @@ var render = {
     for (i = start; i <= end; i += 1) {
       var date = new Date(viewYear + i, 1, 1);
       var disabled = false;
+      var featured = false;
 
       if (startDate) {
         disabled = date.getFullYear() < startDate.getFullYear();
@@ -865,9 +887,22 @@ var render = {
 
       var picked = viewYear + i === year;
       var view = picked ? 'year picked' : 'year';
+      var featuredDateLowerLimit = date.getTime();
+      var featuredDateUpperLimit = new Date(viewYear + i + 1, 1, 1).getTime();
+
+      for (var j = 0; j < featuredDates.length; j += 1) {
+        var featuredDate = featuredDates[j];
+
+        if (featuredDate.getTime() >= featuredDateLowerLimit && featuredDate.getTime() < featuredDateUpperLimit) {
+          featured = true;
+          break;
+        }
+      }
+
       items.push(this.createItem({
         picked: picked,
         disabled: disabled,
+        featured: featured,
         text: viewYear + i,
         view: disabled ? 'year disabled' : view,
         highlighted: date.getFullYear() === thisYear
@@ -883,7 +918,8 @@ var render = {
     var options = this.options,
         startDate = this.startDate,
         endDate = this.endDate,
-        viewDate = this.viewDate;
+        viewDate = this.viewDate,
+        featuredDates = this.featuredDates;
     var disabledClass = options.disabledClass || '';
     var months = options.monthsShort;
     var filter = $__default['default'].isFunction(options.filter) && options.filter;
@@ -901,6 +937,7 @@ var render = {
     for (i = 0; i <= 11; i += 1) {
       var date = new Date(viewYear, i, 1);
       var disabled = false;
+      var featured = false;
 
       if (startDate) {
         prevDisabled = date.getFullYear() === startDate.getFullYear();
@@ -916,12 +953,25 @@ var render = {
         disabled = filter.call(this.$element, date, 'month') === false;
       }
 
+      var featuredDateLowerLimit = date.getTime();
+      var featuredDateUpperLimit = new Date(viewYear, i + 1, 1).getTime();
+
+      for (var j = 0; j < featuredDates.length; j += 1) {
+        var featuredDate = featuredDates[j];
+
+        if (featuredDate.getTime() >= featuredDateLowerLimit && featuredDate.getTime() < featuredDateUpperLimit) {
+          featured = true;
+          break;
+        }
+      }
+
       var picked = viewYear === year && i === month;
       var view = picked ? 'month picked' : 'month';
       items.push(this.createItem({
         disabled: disabled,
         picked: picked,
         highlighted: viewYear === thisYear && date.getMonth() === thisMonth,
+        featured: featured,
         index: i,
         text: months[i],
         view: disabled ? 'month disabled' : view
@@ -939,7 +989,8 @@ var render = {
         startDate = this.startDate,
         endDate = this.endDate,
         viewDate = this.viewDate,
-        currentDate = this.date;
+        currentDate = this.date,
+        featuredDates = this.featuredDates;
     var disabledClass = options.disabledClass,
         filter = options.filter,
         months = options.months,
@@ -1065,6 +1116,7 @@ var render = {
       var _date = new Date(viewYear, viewMonth, i);
 
       var _disabled2 = false;
+      var featured = false;
 
       if (startDate) {
         _disabled2 = _date.getTime() < startDate.getTime();
@@ -1078,6 +1130,19 @@ var render = {
         _disabled2 = filter.call($element, _date, 'day') === false;
       }
 
+      var featuredDateLowerLimit = _date.getTime();
+
+      var featuredDateUpperLimit = new Date(viewYear, viewMonth, i + 1).getTime();
+
+      for (var j = 0; j < featuredDates.length; j += 1) {
+        var featuredDate = featuredDates[j];
+
+        if (featuredDate.getTime() >= featuredDateLowerLimit && featuredDate.getTime() < featuredDateUpperLimit) {
+          featured = true;
+          break;
+        }
+      }
+
       var _picked = viewYear === year && viewMonth === month && i === day;
 
       var view = _picked ? 'day picked' : 'day';
@@ -1085,6 +1150,7 @@ var render = {
         disabled: _disabled2,
         picked: _picked,
         highlighted: viewYear === thisYear && viewMonth === thisMonth && _date.getDate() === thisDay,
+        featured: featured,
         text: i,
         view: _disabled2 ? 'day disabled' : view
       }));
@@ -1123,17 +1189,21 @@ var Datepicker = /*#__PURE__*/function () {
     this.initialDate = null;
     this.startDate = null;
     this.endDate = null;
+    this.featuredDates = [];
     this.init();
   }
 
   _createClass(Datepicker, [{
     key: "init",
     value: function init() {
+      var _this = this;
+
       var $this = this.$element,
           options = this.options;
       var startDate = options.startDate,
           endDate = options.endDate,
-          date = options.date;
+          date = options.date,
+          featuredDates = options.featuredDates;
       this.$trigger = $__default['default'](options.trigger);
       this.isInput = $this.is('input') || $this.is('textarea');
       this.inline = options.inline && (options.container || !this.isInput);
@@ -1165,6 +1235,14 @@ var Datepicker = /*#__PURE__*/function () {
         }
 
         this.endDate = endDate;
+      }
+
+      if (featuredDates) {
+        featuredDates = Array.isArray(featuredDates) ? featuredDates : [featuredDates];
+        featuredDates = featuredDates.map(function (featuredDate) {
+          return _this.parseDate(featuredDate);
+        });
+        this.featuredDates = featuredDates;
       }
 
       this.date = date;
@@ -1422,7 +1500,8 @@ var Datepicker = /*#__PURE__*/function () {
         muted: false,
         picked: false,
         disabled: false,
-        highlighted: false
+        highlighted: false,
+        featured: false
       };
       var classes = [];
       $__default['default'].extend(item, data);
@@ -1441,6 +1520,10 @@ var Datepicker = /*#__PURE__*/function () {
 
       if (item.disabled) {
         classes.push(options.disabledClass);
+      }
+
+      if (item.featured) {
+        classes.push(options.featuredClass);
       }
 
       return "<".concat(itemTag).concat(classes.length > 0 ? " class=\"".concat(classes.join(' '), "\"") : '').concat(item.view ? " data-view=\"".concat(item.view, "\"") : '').concat(item.title ? " title=\"".concat(item.title, "\"") : '').concat(item.picked ? ' aria-selected="true"' : '', ">").concat(item.text, "</").concat(itemTag, ">");

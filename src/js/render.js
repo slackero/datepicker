@@ -30,6 +30,7 @@ export default {
       options,
       startDate,
       endDate,
+      featuredDates,
     } = this;
     const { disabledClass, filter, yearSuffix } = options;
     const viewYear = this.viewDate.getFullYear();
@@ -46,6 +47,7 @@ export default {
     for (i = start; i <= end; i += 1) {
       const date = new Date(viewYear + i, 1, 1);
       let disabled = false;
+      let featured = false;
 
       if (startDate) {
         disabled = date.getFullYear() < startDate.getFullYear();
@@ -70,9 +72,21 @@ export default {
       const picked = (viewYear + i) === year;
       const view = picked ? 'year picked' : 'year';
 
+      const featuredDateLowerLimit = date.getTime();
+      const featuredDateUpperLimit = (new Date(viewYear + i + 1, 1, 1)).getTime();
+      for (let j = 0; j < featuredDates.length; j += 1) {
+        const featuredDate = featuredDates[j];
+        if (featuredDate.getTime() >= featuredDateLowerLimit
+          && featuredDate.getTime() < featuredDateUpperLimit) {
+          featured = true;
+          break;
+        }
+      }
+
       items.push(this.createItem({
         picked,
         disabled,
+        featured,
         text: viewYear + i,
         view: disabled ? 'year disabled' : view,
         highlighted: date.getFullYear() === thisYear,
@@ -93,6 +107,7 @@ export default {
       startDate,
       endDate,
       viewDate,
+      featuredDates,
     } = this;
     const disabledClass = options.disabledClass || '';
     const months = options.monthsShort;
@@ -111,6 +126,7 @@ export default {
     for (i = 0; i <= 11; i += 1) {
       const date = new Date(viewYear, i, 1);
       let disabled = false;
+      let featured = false;
 
       if (startDate) {
         prevDisabled = date.getFullYear() === startDate.getFullYear();
@@ -126,6 +142,17 @@ export default {
         disabled = filter.call(this.$element, date, 'month') === false;
       }
 
+      const featuredDateLowerLimit = date.getTime();
+      const featuredDateUpperLimit = (new Date(viewYear, i + 1, 1)).getTime();
+      for (let j = 0; j < featuredDates.length; j += 1) {
+        const featuredDate = featuredDates[j];
+        if (featuredDate.getTime() >= featuredDateLowerLimit
+          && featuredDate.getTime() < featuredDateUpperLimit) {
+          featured = true;
+          break;
+        }
+      }
+
       const picked = viewYear === year && i === month;
       const view = picked ? 'month picked' : 'month';
 
@@ -133,6 +160,7 @@ export default {
         disabled,
         picked,
         highlighted: viewYear === thisYear && date.getMonth() === thisMonth,
+        featured,
         index: i,
         text: months[i],
         view: disabled ? 'month disabled' : view,
@@ -155,6 +183,7 @@ export default {
       endDate,
       viewDate,
       date: currentDate,
+      featuredDates,
     } = this;
     const {
       disabledClass,
@@ -299,6 +328,7 @@ export default {
     for (i = 1; i <= length; i += 1) {
       const date = new Date(viewYear, viewMonth, i);
       let disabled = false;
+      let featured = false;
 
       if (startDate) {
         disabled = date.getTime() < startDate.getTime();
@@ -312,6 +342,17 @@ export default {
         disabled = filter.call($element, date, 'day') === false;
       }
 
+      const featuredDateLowerLimit = date.getTime();
+      const featuredDateUpperLimit = (new Date(viewYear, viewMonth, i + 1)).getTime();
+      for (let j = 0; j < featuredDates.length; j += 1) {
+        const featuredDate = featuredDates[j];
+        if (featuredDate.getTime() >= featuredDateLowerLimit
+          && featuredDate.getTime() < featuredDateUpperLimit) {
+          featured = true;
+          break;
+        }
+      }
+
       const picked = viewYear === year && viewMonth === month && i === day;
       const view = picked ? 'day picked' : 'day';
 
@@ -323,6 +364,7 @@ export default {
           && viewMonth === thisMonth
           && date.getDate() === thisDay
         ),
+        featured,
         text: i,
         view: disabled ? 'day disabled' : view,
       }));

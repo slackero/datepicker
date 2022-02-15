@@ -301,6 +301,13 @@ A class (CSS) for disabled item.
 
 A class (CSS) for highlight date item.
 
+### featuredClass
+
+- Type: `String`
+- Default: `'featured'`
+
+A class (CSS) for featured date item.
+
 ### template
 
 - Type: `String`
@@ -360,7 +367,7 @@ The CSS `z-index` style for the datepicker.
 - Default: `null`
 - Syntax: `filter(date, view)`
   - `date`: the date for checking.
-  - `view`: the the current view, one of `day`, `month` or `year`.
+  - `view`: the current view, one of `day`, `month` or `year`.
 
 Filter each date item. If return a `false` value, the related date will be disabled.
 
@@ -375,6 +382,13 @@ $().datepicker({
   }
 });
 ```
+
+### featuredDates
+
+- Type: `Array`
+- Default: `[]`
+
+A list of dates that will be emphasized in the calendar.
 
 ### show
 
@@ -523,6 +537,13 @@ Set the start view date with a new date.
 
 Set the end view date with a new date.
 
+### setFeaturedDates(dates)
+
+- **dates**:
+  - Type: `Array` of `Date` or `String` or null
+
+Set the list of featured dates with a new list.
+
 ### parseDate(date)
 
 - **date**:
@@ -630,12 +651,9 @@ If you have to use other plugin with the same namespace, just call the `$.fn.dat
 
 ## Browser support
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Opera (latest)
-- Edge (latest)
-- Internet Explorer 9+
+- Latest 3 versions (Chrome, Safari, Firefox, Firefox ESR, Edge etc.)
+- Not dead (currently used browsers)
+- Internet Explorer 11+
 
 ## Versioning
 

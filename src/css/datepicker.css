@@ -111,6 +111,9 @@
 .datepicker-panel > ul > li.disabled.highlighted, .datepicker-panel > ul > li.disabled:hover.highlighted {
   background-color: #e5f2ff;
 }
+.datepicker-panel > ul > li.featured, .datepicker-panel > ul > li.featured:hover {
+  color: #5f9ea0;
+}
 .datepicker-panel > ul > li[data-view="years prev"], .datepicker-panel > ul > li[data-view="year prev"], .datepicker-panel > ul > li[data-view="month prev"], .datepicker-panel > ul > li[data-view="years next"], .datepicker-panel > ul > li[data-view="year next"], .datepicker-panel > ul > li[data-view="month next"], .datepicker-panel > ul > li[data-view=next] {
   font-size: 18px;
 }

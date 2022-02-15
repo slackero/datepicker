@@ -148,6 +148,11 @@
           }
         }
 
+        &.featured,
+        &.featured:hover {
+          color: #5f9ea0;
+        }
+
         &[data-view="years prev"],
         &[data-view="year prev"],
         &[data-view="month prev"],
