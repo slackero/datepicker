@@ -1,10 +1,8 @@
 # Datepicker
 
-[![Build Status](https://img.shields.io/travis/fengyuanchen/datepicker.svg)](https://travis-ci.org/fengyuanchen/datepicker) [![Downloads](https://img.shields.io/npm/dm/@chenfengyuan/datepicker.svg)](https://www.npmjs.com/package/@chenfengyuan/datepicker) [![Version](https://img.shields.io/npm/v/@chenfengyuan/datepicker.svg)](https://www.npmjs.com/package/@chenfengyuan/datepicker)
-
 > A simple jQuery datepicker plugin.
 
-- [Website](https://fengyuanchen.github.io/datepicker)
+- [Website](https://slackero.github.io/datepicker), _[forked from](https://github.com/fengyuanchen/datepicker)_
 
 ## Table of contents
 
@@ -47,7 +45,7 @@ dist/
 ### Install
 
 ```shell
-npm install @chenfengyuan/datepicker
+npm install @slackero/datepicker
 ```
 
 Include files:

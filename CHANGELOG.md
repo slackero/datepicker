@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.11 (Sep 29, 2020)
+## 1.1.0 (Feb 17, 2022)
 
 - Add option to emphasize some featured dates
 

@@ -1,10 +1,10 @@
 {
-  "name": "fengyuanchen/datepicker",
+  "name": "slackero/datepicker",
   "license": "MIT",
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/fengyuanchen/datepicker"
+      "url": "https://github.com/slackero/datepicker"
     }
   ]
 }
