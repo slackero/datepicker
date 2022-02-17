@@ -1,11 +1,11 @@
 /*!
- * Datepicker v1.1.0
+ * Datepicker v1.1.1
  * https://slackero.github.io/datepicker
  *
  * Copyright 2014-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2022-02-17T13:31:10.255Z
+ * Date: 2022-02-17T13:51:44.199Z
  */
 
 (function (global, factory) {
